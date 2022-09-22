@@ -10,16 +10,14 @@ const config: Config = {
   readOnlyChainId: Mainnet.chainId,
   readOnlyUrls: {
     [Mainnet.chainId]: getDefaultProvider("mainnet"),
-    [Rinkeby.chainId]: getDefaultProvider("rinkeby")
-  }
+    [Rinkeby.chainId]: getDefaultProvider("rinkeby"),
+  },
 };
 
 const rootElement = document.getElementById("root");
 
-if (rootElement){
-  ReactDOMClient
-  .createRoot(rootElement)
-    .render(
+if (rootElement) {
+  ReactDOMClient.createRoot(rootElement).render(
     <StrictMode>
       <DAppProvider config={config}>
         <App />

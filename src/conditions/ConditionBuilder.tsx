@@ -15,19 +15,19 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
 
   const { LOGICAL_OPERATORS } = Conditions.Operator;
   const PREBUILT_CONDITIONS: Record<string, unknown> = {
-    ERC721Ownership: new Conditions.ERC721Ownership()
+    ERC721Ownership: new Conditions.ERC721Ownership(),
   };
   const CONDITION_TYPES = [
     Conditions.TimelockCondition.CONDITION_TYPE,
     Conditions.EvmCondition.CONDITION_TYPE,
-    Conditions.RpcCondition.CONDITION_TYPE
+    Conditions.RpcCondition.CONDITION_TYPE,
   ];
   const { COMPARATOR_OPERATORS } = Condition;
   const { RPC_METHODS } = Conditions.RpcCondition;
   const {
     STANDARD_CONTRACT_TYPES,
     METHODS_PER_CONTRACT_TYPE,
-    PARAMETERS_PER_METHOD
+    PARAMETERS_PER_METHOD,
   } = Conditions.EvmCondition;
 
   const [logicalOperator, setLogicalOperator] = useState(LOGICAL_OPERATORS[0]);
@@ -184,8 +184,8 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
         return new Conditions.TimelockCondition({
           returnValueTest: {
             comparator,
-            value: returnValueTest
-          }
+            value: returnValueTest,
+          },
         });
       case "rpc":
         return new Conditions.RpcCondition({
@@ -194,8 +194,8 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
           parameters: [parameterValue],
           returnValueTest: {
             comparator,
-            value: returnValueTest
-          }
+            value: returnValueTest,
+          },
         });
       case "evm":
         return new Conditions.EvmCondition({
@@ -207,8 +207,8 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
           parameters: [parameterValue],
           returnValueTest: {
             comparator,
-            value: returnValueTest
-          }
+            value: returnValueTest,
+          },
         });
       default:
         throw Error(`Unrecognized condition type ${conditionType}`);

@@ -4,7 +4,7 @@ import {
   Enrico,
   MessageKit,
   tDecDecrypter,
-  PolicyMessageKit
+  PolicyMessageKit,
 } from "@nucypher/nucypher-ts";
 import React, { useEffect, useState } from "react";
 import { useEthers } from "@usedapp/core";
@@ -45,10 +45,7 @@ export default function App() {
     const configLabel = "2-of-4-ibex";
 
     const make = async () => {
-      const decrypter = await makeTDecDecrypter(
-        configLabel,
-        porterUri
-      );
+      const decrypter = await makeTDecDecrypter(configLabel, porterUri);
       const encrypter = await makeTDecEncrypter(configLabel);
       setDecrypter(decrypter);
       setEncrypter(encrypter);
@@ -74,7 +71,7 @@ export default function App() {
 
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
     const conditionContext = conditions.buildContext(web3Provider);
-    
+
     // Simplified flow with automated error handling
     // const decryptedMessages = await decrypter.retrieveAndDecrypt(
     //   [ciphertext],
@@ -82,27 +79,36 @@ export default function App() {
     // );
 
     // More extensive flow with manual error handling
-    const retrievedMessages = await decrypter.retrieve([ciphertext], conditionContext)
+    const retrievedMessages = await decrypter.retrieve(
+      [ciphertext],
+      conditionContext
+    );
     const decryptedMessages = retrievedMessages.map((mk: PolicyMessageKit) => {
       if (mk.isDecryptableByReceiver()) {
-        return decrypter.decrypt(mk)
+        return decrypter.decrypt(mk);
       }
-      
+
       // If we are unable to decrypt, we may inspect the errors and handle them
-      const errorMsg = `Not enough cFrags retrieved to open capsule ${mk.capsule}.`
+      const errorMsg = `Not enough cFrags retrieved to open capsule ${mk.capsule}.`;
       if (Object.values(mk.errors).length > 0) {
-        const ursulasWithErrors = Object.entries(mk.errors).map(([address, error]) => `${address} - ${error}`)
-        alert(`${errorMsg} Some Ursulas have failed with errors:\n${ursulasWithErrors.join('\n')}`)
+        const ursulasWithErrors = Object.entries(mk.errors).map(
+          ([address, error]) => `${address} - ${error}`
+        );
+        alert(
+          `${errorMsg} Some Ursulas have failed with errors:\n${ursulasWithErrors.join(
+            "\n"
+          )}`
+        );
       } else {
-        alert(errorMsg)
+        alert(errorMsg);
       }
       return new Uint8Array();
-    })
-    
-    setDecryptedMessage(new TextDecoder().decode(decryptedMessages[0]))
+    });
+
+    setDecryptedMessage(new TextDecoder().decode(decryptedMessages[0]));
   };
 
-  if(!account) {
+  if (!account) {
     return (
       <div>
         <h2>Web3 Provider</h2>
@@ -110,7 +116,7 @@ export default function App() {
       </div>
     );
   }
-  
+
   return (
     <div>
       <div>
@@ -118,13 +124,13 @@ export default function App() {
         <button onClick={deactivate}> Disconnect Wallet </button>
         {account && <p>Account: {account}</p>}
       </div>
-      
+
       <ConditionList
         enabled={encryptionEnabled}
         conditions={conditions}
         setConditions={setConditions}
       />
-      
+
       {conditions && (
         <>
           <EnricoEncrypts

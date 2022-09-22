@@ -1,6 +1,6 @@
 import type { MessageKit } from "@nucypher/nucypher-ts";
 import React, { useState } from "react";
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 interface Props {
   enabled: boolean;
@@ -11,7 +11,7 @@ interface Props {
 export const EnricoEncrypts = ({
   encrypt,
   encryptedMessage,
-  enabled
+  enabled,
 }: Props) => {
   if (!enabled) {
     return <></>;
@@ -26,9 +26,9 @@ export const EnricoEncrypts = ({
       return <></>;
     }
 
-    const encodedEncryptedMessage = Buffer
-      .from(encryptedMessage.toBytes())
-      .toString("base64");
+    const encodedEncryptedMessage = Buffer.from(
+      encryptedMessage.toBytes()
+    ).toString("base64");
     return (
       <div>
         <h3>Encrypted message:</h3>

@@ -12,7 +12,7 @@ interface Props {
 export const ConditionList = ({
   conditions,
   setConditions,
-  enabled
+  enabled,
 }: Props) => {
   const enableOperator =
     (conditions && conditions.conditions.length > 0) || false;
@@ -41,7 +41,9 @@ export const ConditionList = ({
         ))}
       </pre>
     </div>
-  ) : (<></>);
+  ) : (
+    <></>
+  );
 
   if (!enabled) {
     return <></>;

@@ -20,16 +20,16 @@ export const BobDecrypts = ({ decrypt, decryptedMessage, enabled }: Props) => {
   };
 
   const DecryptedMessage = () => {
-    if(!decryptedMessage) {
-      return <></>
+    if (!decryptedMessage) {
+      return <></>;
     }
     return (
       <>
         <h3>Decrypted Message:</h3>
         <p>{decryptedMessage}</p>
       </>
-    )
-  }
+    );
+  };
 
   return (
     <div>
