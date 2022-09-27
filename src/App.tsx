@@ -12,8 +12,8 @@ import type { ConditionSet } from "@nucypher/nucypher-ts";
 import { ethers } from "ethers";
 
 import { ConditionList } from "./conditions/ConditionList";
-import { EnricoEncrypts } from "./EnricoEncrypts";
-import { BobDecrypts } from "./BobDecrypts";
+import { Encrypt } from "./Encrypt";
+import { Decrypt } from "./Decrypt";
 
 declare let window: any;
 
@@ -30,15 +30,15 @@ export default function App() {
     undefined as ConditionSet | undefined
   );
 
-  // // Encrypt message vars
-  const [encryptionEnabled, setEncryptionEnabled] = useState(true);
+  // Encrypt message vars
   const [encryptedMessage, setEncryptedMessage] = useState(
     undefined as MessageKit | undefined
   );
 
-  // // Decrypt message vars
+  // Decrypt message vars
   const [decryptionEnabled, setDecryptionEnabled] = useState(false);
   const [decryptedMessage, setDecryptedMessage] = useState("");
+  const [decryptionErrors, setDecryptionErrors] = useState([] as string[])
 
   useEffect(() => {
     const porterUri = "https://porter-ibex.nucypher.community";
@@ -65,6 +65,9 @@ export default function App() {
   };
 
   const decryptMessage = async (ciphertext: MessageKit) => {
+    setDecryptedMessage('')
+    setDecryptionErrors([])
+
     if (!decrypter || !conditions || !library) {
       return;
     }
@@ -79,33 +82,23 @@ export default function App() {
     // );
 
     // More extensive flow with manual error handling
-    const retrievedMessages = await decrypter.retrieve(
-      [ciphertext],
-      conditionContext
-    );
+    const retrievedMessages = await decrypter.retrieve([ciphertext], conditionContext)
     const decryptedMessages = retrievedMessages.map((mk: PolicyMessageKit) => {
       if (mk.isDecryptableByReceiver()) {
-        return decrypter.decrypt(mk);
+        return decrypter.decrypt(mk)
       }
 
       // If we are unable to decrypt, we may inspect the errors and handle them
-      const errorMsg = `Not enough cFrags retrieved to open capsule ${mk.capsule}.`;
       if (Object.values(mk.errors).length > 0) {
-        const ursulasWithErrors = Object.entries(mk.errors).map(
-          ([address, error]) => `${address} - ${error}`
-        );
-        alert(
-          `${errorMsg} Some Ursulas have failed with errors:\n${ursulasWithErrors.join(
-            "\n"
-          )}`
-        );
+        const ursulasWithErrors: string[] = Object.entries(mk.errors).map(([address, error]) => `${address} - ${error}`)
+        setDecryptionErrors(ursulasWithErrors)
       } else {
-        alert(errorMsg);
+        setDecryptionErrors([])
       }
-      return new Uint8Array();
-    });
+      return new Uint8Array()
+    })
 
-    setDecryptedMessage(new TextDecoder().decode(decryptedMessages[0]));
+    setDecryptedMessage(new TextDecoder().decode(decryptedMessages[0]))
   };
 
   if (!account) {
@@ -126,22 +119,20 @@ export default function App() {
       </div>
 
       <ConditionList
-        enabled={encryptionEnabled}
         conditions={conditions}
         setConditions={setConditions}
       />
 
       {conditions && (
         <>
-          <EnricoEncrypts
-            enabled={encryptionEnabled}
+          <Encrypt
             encrypt={encryptMessage}
             encryptedMessage={encryptedMessage}
           />
-          <BobDecrypts
-            enabled={decryptionEnabled}
+          <Decrypt
             decrypt={decryptMessage}
             decryptedMessage={decryptedMessage}
+            decryptionErrors={decryptionErrors}
           />
         </>
       )}

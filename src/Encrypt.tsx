@@ -3,20 +3,14 @@ import React, { useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 interface Props {
-  enabled: boolean;
   encryptedMessage?: MessageKit;
   encrypt: (value: string) => void;
 }
 
-export const EnricoEncrypts = ({
+export const Encrypt = ({
   encrypt,
   encryptedMessage,
-  enabled,
 }: Props) => {
-  if (!enabled) {
-    return <></>;
-  }
-
   const [plaintext, setPlaintext] = useState("plaintext");
 
   const onClick = () => encrypt(plaintext);

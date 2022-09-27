@@ -6,13 +6,11 @@ import { ConditionBuilder } from "./ConditionBuilder";
 interface Props {
   conditions?: ConditionSet;
   setConditions: (value: ConditionSet) => void;
-  enabled: boolean;
 }
 
 export const ConditionList = ({
   conditions,
   setConditions,
-  enabled,
 }: Props) => {
   const enableOperator =
     (conditions && conditions.conditions.length > 0) || false;
@@ -44,10 +42,6 @@ export const ConditionList = ({
   ) : (
     <></>
   );
-
-  if (!enabled) {
-    return <></>;
-  }
 
   return (
     <>

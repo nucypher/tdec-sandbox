@@ -9,6 +9,7 @@ interface Props {
 
 export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
   const { library } = useEthers();
+  
   if (!library) {
     return null;
   }
@@ -31,9 +32,6 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
   } = Conditions.EvmCondition;
 
   const [logicalOperator, setLogicalOperator] = useState(LOGICAL_OPERATORS[0]);
-  const [prebuiltCondition, setPrebuiltCondition] = useState(
-    Object.keys(PREBUILT_CONDITIONS)[0]
-  );
   const [conditionType, setConditionType] = useState(CONDITION_TYPES[0]);
   const [comparator, setComparator] = useState(COMPARATOR_OPERATORS[0]);
   const [rpcMethod, setRpcMethod] = useState(RPC_METHODS[0]);
@@ -77,10 +75,6 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
     LOGICAL_OPERATORS,
     setLogicalOperator
   );
-  const PrebuiltConditionDropdown = makeDropdown(
-    Object.keys(PREBUILT_CONDITIONS),
-    setPrebuiltCondition
-  );
   const ConditionTypeDropdown = makeDropdown(CONDITION_TYPES, setConditionType);
   const ComparatorDropdown = makeDropdown(COMPARATOR_OPERATORS, setComparator);
   const RpcMethodDropdown = makeDropdown(RPC_METHODS, onSetRpcMethod);
@@ -98,13 +92,12 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
   );
 
   const makeInput = (
-    type: "text" | "number",
     onChange = (e: any) => console.log(e)
-  ) => <input type={type} onChange={(e: any) => onChange(e.target.value)} />;
+  ) => <input type="string" onChange={(e: any) => onChange(e.target.value)} />;
 
-  const ReturnValueTestInput = makeInput("number", setReturnValueTest);
-  const ParametersValueInput = makeInput("text", setParameterValue);
-  const ContractAddressInput = makeInput("text", setContractAddress);
+  const ReturnValueTestInput = makeInput(setReturnValueTest);
+  const ParametersValueInput = makeInput(setParameterValue);
+  const ContractAddressInput = makeInput(setContractAddress);
 
   const TimelockCondition = (
     <div style={{ display: "grid" }}>
@@ -198,13 +191,16 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
           },
         });
       case "evm":
+         // TODO: Remove this workaround after introducing proper parsing in EvmCondition
+        // eslint-disable-next-line no-case-declarations
+        const parameters = contractMethod === 'ownerOf' && parameterValue ? [parseInt(parameterValue, 10)] : [parameterValue]
         return new Conditions.EvmCondition({
           contractAddress,
           chain,
           // functionAbi: '', // TODO: Where do I get this from?
           standardContractType,
           method: contractMethod,
-          parameters: [parameterValue],
+          parameters,
           returnValueTest: {
             comparator,
             value: returnValueTest,
@@ -227,12 +223,6 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
     addConditions(conditionAndMaybeOperator);
   };
 
-  const onAddPrebuiltCondition = (e: any) => {
-    e.preventDefault();
-    const prebuilt = PREBUILT_CONDITIONS[prebuiltCondition] as Condition;
-    addConditionAndMaybeOperator(prebuilt);
-  };
-
   const onAddNewCondition = (e: any) => {
     e.preventDefault();
     const condition = makeConditonForType(conditionType);
@@ -247,14 +237,6 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
           {LogicalOperatorDropdown}
         </>
       )}
-
-      {/* <div style={{ display: 'grid' }}>
-        <h3>Select Prebuilt Condition</h3>
-        {PrebuiltConditionDropdown}
-
-        <Button onClick={onAddPrebuiltCondition}>Add Prebuilt</Button>
-      </div> */}
-
       <div>
         <h3>Build New Condition</h3>
         {ConditionTypeDropdown}
