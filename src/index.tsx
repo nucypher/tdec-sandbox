@@ -1,18 +1,20 @@
 import React from "react";
 import { StrictMode } from "react";
 import * as ReactDOMClient from "react-dom/client";
-import { Mainnet, DAppProvider, Config, Rinkeby } from "@usedapp/core";
-import { getDefaultProvider } from "ethers";
+import { DAppProvider, Config, Rinkeby } from "@usedapp/core";
 
 import App from "./App";
 
+const PROVIDER_URL =
+  'https://hardworking-clean-gas.rinkeby.discover.quiknode.pro/17628d541fafc8312c89998c94610cf3c76613de/'
+
 const config: Config = {
-  readOnlyChainId: Mainnet.chainId,
+  readOnlyChainId: Rinkeby.chainId,
   readOnlyUrls: {
-    [Mainnet.chainId]: getDefaultProvider("mainnet"),
-    [Rinkeby.chainId]: getDefaultProvider("rinkeby"),
+    [Rinkeby.chainId]: PROVIDER_URL,
   },
-};
+  networks: [Rinkeby],
+}
 
 const rootElement = document.getElementById("root");
 
