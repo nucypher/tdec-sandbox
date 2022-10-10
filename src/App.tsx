@@ -1,104 +1,73 @@
-import {
-  makeTDecDecrypter,
-  makeTDecEncrypter,
-  Enrico,
+import type {
   MessageKit,
-  tDecDecrypter,
   PolicyMessageKit,
+  DeployedStrategy,
+  ConditionSet,
 } from "@nucypher/nucypher-ts";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useEthers } from "@usedapp/core";
-import type { ConditionSet } from "@nucypher/nucypher-ts";
 import { ethers } from "ethers";
 
 import { ConditionList } from "./conditions/ConditionList";
 import { Encrypt } from "./Encrypt";
 import { Decrypt } from "./Decrypt";
-
-declare let window: any;
+import { StrategyBuilder } from "./StrategyBuilder";
+import { Spinner } from "./Spinner";
 
 export default function App() {
   const { activateBrowserWallet, deactivate, account, library } = useEthers();
 
-  // tDec Entities
-  const [encrypter, setEncrypter] = useState(undefined as Enrico | undefined);
-  const [decrypter, setDecrypter] = useState(
-    undefined as tDecDecrypter | undefined
-  );
-
-  const [conditions, setConditions] = useState(
-    undefined as ConditionSet | undefined
-  );
-
-  // Encrypt message vars
-  const [encryptedMessage, setEncryptedMessage] = useState(
-    undefined as MessageKit | undefined
-  );
-
-  // Decrypt message vars
-  const [decryptionEnabled, setDecryptionEnabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [deployedStrategy, setDeployedStrategy] = useState<DeployedStrategy>();
+  const [conditions, setConditions] = useState<ConditionSet>();
+  const [encryptedMessage, setEncryptedMessage] = useState<MessageKit>();
   const [decryptedMessage, setDecryptedMessage] = useState("");
-  const [decryptionErrors, setDecryptionErrors] = useState([] as string[])
-
-  useEffect(() => {
-    const porterUri = "https://porter-ibex.nucypher.community";
-    const configLabel = "2-of-4-ibex";
-
-    const make = async () => {
-      const decrypter = await makeTDecDecrypter(configLabel, porterUri);
-      const encrypter = await makeTDecEncrypter(configLabel);
-      setDecrypter(decrypter);
-      setEncrypter(encrypter);
-    };
-    make();
-  }, []);
+  const [decryptionErrors, setDecryptionErrors] = useState<string[]>([]);
 
   const encryptMessage = (plaintext: string) => {
-    if (!encrypter || !conditions) {
-      return;
-    }
-    encrypter.conditions = conditions;
-    const encryptedMessage = encrypter.encryptMessage(plaintext);
+    setLoading(true);
+    deployedStrategy!.encrypter.conditions = conditions;
+    const encryptedMessage =
+      deployedStrategy!.encrypter.encryptMessage(plaintext);
 
     setEncryptedMessage(encryptedMessage);
-    setDecryptionEnabled(true);
+    setLoading(false);
   };
 
   const decryptMessage = async (ciphertext: MessageKit) => {
-    setDecryptedMessage('')
-    setDecryptionErrors([])
-
-    if (!decrypter || !conditions || !library) {
-      return;
-    }
+    setLoading(true);
+    setDecryptedMessage("");
+    setDecryptionErrors([]);
 
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-    const conditionContext = conditions.buildContext(web3Provider);
+    console.log("web3Provider", web3Provider);
+    const conditionContext =
+      deployedStrategy!.encrypter.conditions!.buildContext(web3Provider);
 
-    // Simplified flow with automated error handling
-    // const decryptedMessages = await decrypter.retrieveAndDecrypt(
-    //   [ciphertext],
-    //   conditionContext
-    // );
-
-    // More extensive flow with manual error handling
-    const retrievedMessages = await decrypter.retrieve([ciphertext], conditionContext)
+    const retrievedMessages = await deployedStrategy!.decrypter.retrieve(
+      [ciphertext],
+      conditionContext
+    );
+    console.log({ retrievedMessages });
     const decryptedMessages = retrievedMessages.map((mk: PolicyMessageKit) => {
       if (mk.isDecryptableByReceiver()) {
-        return decrypter.decrypt(mk)
+        return deployedStrategy!.decrypter.decrypt(mk);
       }
 
       // If we are unable to decrypt, we may inspect the errors and handle them
       if (Object.values(mk.errors).length > 0) {
-        const ursulasWithErrors: string[] = Object.entries(mk.errors).map(([address, error]) => `${address} - ${error}`)
-        setDecryptionErrors(ursulasWithErrors)
+        const ursulasWithErrors: string[] = Object.entries(mk.errors).map(
+          ([address, error]) => `${address} - ${error}`
+        );
+        setDecryptionErrors(ursulasWithErrors);
       } else {
-        setDecryptionErrors([])
+        setDecryptionErrors([]);
       }
-      return new Uint8Array()
-    })
+      return new Uint8Array([]);
+    });
 
-    setDecryptedMessage(new TextDecoder().decode(decryptedMessages[0]))
+    setDecryptedMessage(new TextDecoder().decode(decryptedMessages[0]));
+    setLoading(false);
   };
 
   if (!account) {
@@ -110,6 +79,10 @@ export default function App() {
     );
   }
 
+  if (loading) {
+    return <Spinner loading={loading} />;
+  }
+
   return (
     <div>
       <div>
@@ -118,24 +91,25 @@ export default function App() {
         {account && <p>Account: {account}</p>}
       </div>
 
-      <ConditionList
-        conditions={conditions}
-        setConditions={setConditions}
+      <StrategyBuilder
+        setLoading={setLoading}
+        setDeployedStrategy={setDeployedStrategy}
       />
 
-      {conditions && (
-        <>
-          <Encrypt
-            encrypt={encryptMessage}
-            encryptedMessage={encryptedMessage}
-          />
-          <Decrypt
-            decrypt={decryptMessage}
-            decryptedMessage={decryptedMessage}
-            decryptionErrors={decryptionErrors}
-          />
-        </>
-      )}
+      <ConditionList conditions={conditions} setConditions={setConditions} />
+
+      <Encrypt
+        enabled={!!conditions}
+        encrypt={encryptMessage}
+        encryptedMessage={encryptedMessage!}
+      />
+
+      <Decrypt
+        enabled={!!encryptedMessage}
+        decrypt={decryptMessage}
+        decryptedMessage={decryptedMessage}
+        decryptionErrors={decryptionErrors}
+      />
     </div>
   );
 }

@@ -9,7 +9,7 @@
     "build": "tsc --noEmit && rimraf build && webpack --mode production --progress"
   },
   "dependencies": {
-    "@nucypher/nucypher-ts": "^0.7.9-alpha.17",
+    "@nucypher/nucypher-ts": "^0.7.9-alpha.19",
     "@usedapp/core": "^1.1.5",
     "buffer": "^6.0.3",
     "ethers": "^5.7.1",
