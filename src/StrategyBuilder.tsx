@@ -25,7 +25,7 @@ export const StrategyBuilder = ({ setDeployedStrategy, setLoading }: Props) => {
       "0x53f72787d33b29b0f1d5485f4b0B1281FbE8e613",
       "0xb0488A74Ad06DC0DA2031cBD720537C48d63EfD7",
       "0xbC40aE0041b9b0AE3D012a40492B42d1E0EE294F",
-    ].slice(0, threshold); // TODO: Remove after updating nucypher-ts
+    ].slice(0, shares); // TODO: Remove after updating nucypher-ts
     const cohort = await Cohort.create(
       cohortConfig,
       goodUrsulas as unknown[] as never[] // TODO: remove after updating nucypher-ts
