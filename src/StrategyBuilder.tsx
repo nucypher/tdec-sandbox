@@ -17,14 +17,19 @@ export const StrategyBuilder = ({ setDeployedStrategy, setLoading }: Props) => {
     const cohortConfig = {
       threshold,
       shares,
-      porterUri: "https://porter.nucypher.community",
+      porterUri: "http://143.198.239.218",
     };
-    // const goodUrsulas = ["0xCe692F6fA86319Af43050fB7F09FDC43319F7612"];
+    const goodUrsulas = [
+      "0xCe692F6fA86319Af43050fB7F09FDC43319F7612",
+      "0xbD27e413b1460d51fe1b6b4b64E5dAFC3541b12B",
+      "0x53f72787d33b29b0f1d5485f4b0B1281FbE8e613",
+      "0xb0488A74Ad06DC0DA2031cBD720537C48d63EfD7",
+      "0xbC40aE0041b9b0AE3D012a40492B42d1E0EE294F",
+    ];
     const cohort = await Cohort.create(
-      cohortConfig
-      // goodUrsulas as unknown[] as never[] // TODO: remove after updating nucypher-ts
+      cohortConfig,
+      goodUrsulas as unknown[] as never[] // TODO: remove after updating nucypher-ts
     );
-    console.log("Created cohort: ", cohort);
     return cohort;
   };
 
