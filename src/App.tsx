@@ -15,7 +15,7 @@ import { StrategyBuilder } from "./StrategyBuilder";
 import { Spinner } from "./Spinner";
 
 export default function App() {
-  const { activateBrowserWallet, deactivate, account, library } = useEthers();
+  const { activateBrowserWallet, deactivate, account } = useEthers();
 
   const [loading, setLoading] = useState(false);
   const [deployedStrategy, setDeployedStrategy] = useState<DeployedStrategy>();

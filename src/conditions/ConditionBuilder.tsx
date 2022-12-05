@@ -168,10 +168,7 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
   };
 
   const makeConditonForType = (type: string): Record<string, any> => {
-    // TODO: Capitalizing is required
-    const capitalizeFirstLetter = (s: string) =>
-      s.charAt(0).toUpperCase() + s.slice(1);
-    const chain = capitalizeFirstLetter(library.network.name);
+    const chain = library.network.chainId;
     switch (type) {
       case "timelock":
         return new Conditions.TimelockCondition({
@@ -200,7 +197,6 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
         return new Conditions.EvmCondition({
           contractAddress,
           chain,
-          // functionAbi: '', // TODO: Where do I get this from?
           standardContractType,
           method: contractMethod,
           parameters,
