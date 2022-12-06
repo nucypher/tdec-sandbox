@@ -2,13 +2,23 @@ import { MessageKit } from "@nucypher/nucypher-ts";
 import React, { useState } from "react";
 
 interface Props {
+  enabled: boolean;
   decrypt: (ciphertext: MessageKit) => void;
   decryptedMessage: string;
   decryptionErrors: string[];
 }
 
-export const Decrypt = ({ decrypt, decryptedMessage, decryptionErrors }: Props) => {
+export const Decrypt = ({
+  decrypt,
+  decryptedMessage,
+  decryptionErrors,
+  enabled,
+}: Props) => {
   const [ciphertext, setCiphertext] = useState("");
+
+  if (!enabled) {
+    return <></>;
+  }
 
   const onDecrypt = () => {
     const b64decoded = Buffer.from(ciphertext, "base64");
@@ -29,7 +39,7 @@ export const Decrypt = ({ decrypt, decryptedMessage, decryptionErrors }: Props) 
 
   const DecryptionErrors = () => {
     if (decryptionErrors.length === 0) {
-      return null
+      return null;
     }
 
     return (
@@ -43,7 +53,7 @@ export const Decrypt = ({ decrypt, decryptedMessage, decryptionErrors }: Props) 
           ))}
         </ul>
       </div>
-    )
+    );
   };
 
   return (

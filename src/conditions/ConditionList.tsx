@@ -8,10 +8,7 @@ interface Props {
   setConditions: (value: ConditionSet) => void;
 }
 
-export const ConditionList = ({
-  conditions,
-  setConditions,
-}: Props) => {
+export const ConditionList = ({ conditions, setConditions }: Props) => {
   const enableOperator =
     (conditions && conditions.conditions.length > 0) || false;
 
@@ -25,7 +22,7 @@ export const ConditionList = ({
   // TODO: Use proper types instead of `unknown` once namespaces in `nucypher-ts` are fixed
   const Condition = (cond: unknown) => {
     if (cond instanceof Conditions.Condition) {
-      return JSON.stringify(cond.value, null, 2);
+      return JSON.stringify(cond.toObj(), null, 2);
     }
     return JSON.stringify(cond, null, 2);
   };

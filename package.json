@@ -9,14 +9,15 @@
     "build": "tsc --noEmit && rimraf build && webpack --mode production --progress"
   },
   "dependencies": {
-    "@nucypher/nucypher-ts": "^0.7.9-alpha.17",
+    "@nucypher/nucypher-ts": "^0.9.0-alpha.0",
     "@usedapp/core": "^1.1.5",
     "buffer": "^6.0.3",
     "ethers": "^5.7.1",
     "file-loader": "^6.2.0",
     "react": "^18.2.0",
     "react-copy-to-clipboard": "^5.1.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-spinners": "^0.13.6"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",

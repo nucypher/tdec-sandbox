@@ -9,12 +9,12 @@ interface Props {
 
 export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
   const { library } = useEthers();
-  
+
   if (!library) {
     return null;
   }
 
-  const { LOGICAL_OPERATORS } = Conditions.Operator;
+  const LOGICAL_OPERATORS = [Conditions.AND.operator, Conditions.OR.operator];
   const PREBUILT_CONDITIONS: Record<string, unknown> = {
     ERC721Ownership: new Conditions.ERC721Ownership(),
   };
@@ -91,9 +91,9 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
     setContractMethodParameters
   );
 
-  const makeInput = (
-    onChange = (e: any) => console.log(e)
-  ) => <input type="string" onChange={(e: any) => onChange(e.target.value)} />;
+  const makeInput = (onChange = (e: any) => console.log(e)) => (
+    <input type="string" onChange={(e: any) => onChange(e.target.value)} />
+  );
 
   const ReturnValueTestInput = makeInput(setReturnValueTest);
   const ParametersValueInput = makeInput(setParameterValue);
@@ -168,10 +168,7 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
   };
 
   const makeConditonForType = (type: string): Record<string, any> => {
-    // TODO: Capitalizing is required
-    const capitalizeFirstLetter = (s: string) =>
-      s.charAt(0).toUpperCase() + s.slice(1);
-    const chain = capitalizeFirstLetter(library.network.name);
+    const chain = library.network.chainId;
     switch (type) {
       case "timelock":
         return new Conditions.TimelockCondition({
@@ -191,13 +188,15 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
           },
         });
       case "evm":
-         // TODO: Remove this workaround after introducing proper parsing in EvmCondition
+        // TODO: Remove this workaround after introducing proper parsing in EvmCondition
         // eslint-disable-next-line no-case-declarations
-        const parameters = contractMethod === 'ownerOf' && parameterValue ? [parseInt(parameterValue, 10)] : [parameterValue]
+        const parameters =
+          contractMethod === "ownerOf" && parameterValue
+            ? [parseInt(parameterValue, 10)]
+            : [parameterValue];
         return new Conditions.EvmCondition({
           contractAddress,
           chain,
-          // functionAbi: '', // TODO: Where do I get this from?
           standardContractType,
           method: contractMethod,
           parameters,
