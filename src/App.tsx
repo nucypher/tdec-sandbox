@@ -94,7 +94,11 @@ export default function App() {
         setDeployedStrategy={setDeployedStrategy}
       />
 
-      <ConditionList conditions={conditions} setConditions={setConditions} />
+      <ConditionList
+        setConditions={setConditions}
+        conditions={conditions}
+        enabled={!!deployedStrategy}
+      />
 
       <Encrypt
         enabled={!!conditions}

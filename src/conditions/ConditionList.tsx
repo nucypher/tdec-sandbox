@@ -4,11 +4,16 @@ import React from "react";
 import { ConditionBuilder } from "./ConditionBuilder";
 
 interface Props {
-  conditions?: ConditionSet;
   setConditions: (value: ConditionSet) => void;
+  conditions?: ConditionSet;
+  enabled?: boolean;
 }
 
-export const ConditionList = ({ conditions, setConditions }: Props) => {
+export const ConditionList = ({ conditions, setConditions, enabled = false }: Props) => {
+  if (!enabled) {
+    return null;
+  }
+
   const enableOperator =
     (conditions && conditions.conditions.length > 0) || false;
 
