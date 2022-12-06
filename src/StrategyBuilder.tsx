@@ -17,7 +17,7 @@ export const StrategyBuilder = ({ setDeployedStrategy, setLoading }: Props) => {
     const cohortConfig = {
       threshold,
       shares,
-      porterUri: "https://porter-lynx.nucypher.community"
+      porterUri: "https://porter-tapir.nucypher.community"
     };
     const cohort = await Cohort.create(cohortConfig);
     console.log("Created cohort: ", cohort);
