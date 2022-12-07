@@ -1,5 +1,5 @@
 import { Operator, Conditions, Condition } from "@nucypher/nucypher-ts";
-import { useEthers } from "@usedapp/core";
+import { Goerli, useEthers } from "@usedapp/core";
 import React, { useState } from "react";
 
 interface Props {
@@ -15,9 +15,6 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
   }
 
   const LOGICAL_OPERATORS = [Conditions.AND.operator, Conditions.OR.operator];
-  const PREBUILT_CONDITIONS: Record<string, unknown> = {
-    ERC721Ownership: new Conditions.ERC721Ownership(),
-  };
   const CONDITION_TYPES = [
     Conditions.TimelockCondition.CONDITION_TYPE,
     Conditions.EvmCondition.CONDITION_TYPE,
@@ -168,7 +165,7 @@ export const ConditionBuilder = ({ addConditions, enableOperator }: Props) => {
   };
 
   const makeConditonForType = (type: string): Record<string, any> => {
-    const chain = library.network.chainId;
+    const chain = Goerli.chainId;
     switch (type) {
       case "timelock":
         return new Conditions.TimelockCondition({
