@@ -40,12 +40,10 @@ export default function App() {
     setDecryptionErrors([]);
 
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-    const conditionContext =
-      deployedStrategy!.encrypter.conditions!.buildContext(web3Provider);
 
     const retrievedMessages = await deployedStrategy!.decrypter.retrieve(
       [ciphertext],
-      conditionContext
+      web3Provider
     );
     const decryptedMessages = retrievedMessages.map((mk: PolicyMessageKit) => {
       if (mk.isDecryptableByReceiver()) {
