@@ -1,3 +1,7 @@
+# This repository has been deprecated. Please visit [`nucypher-ts`](https://github.com/nucypher/nucypher-ts/tree/main/demos) repository for updated demos. 
+
+---
+
 # `nucypher/tdec-sandbox`
 
 This repository contains a simple and easy to use example of condition threshold decryption.
